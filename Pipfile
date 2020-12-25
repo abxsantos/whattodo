@@ -6,10 +6,11 @@ name = "pypi"
 [packages]
 
 [dev-packages]
-flake8 = "*"
 isort = "*"
 pytest = "*"
 black = "*"
+mypy = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.9"
