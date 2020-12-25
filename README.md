@@ -5,3 +5,7 @@
 Once inside the container, to install the dependencies
 
 `# pipenv install --dev --pre --system`
+
+To lint the project
+
+`# pipenv install --dev --pre --system`
