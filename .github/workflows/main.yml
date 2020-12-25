@@ -29,4 +29,6 @@ jobs:
       run: tox -e py,lint
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v1.4
+        env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
