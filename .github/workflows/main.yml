@@ -27,3 +27,6 @@ jobs:
     - name: Run Tox
       # Run tox using the version of Python in `PATH`
       run: tox -e py,lint
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v1.4
+
