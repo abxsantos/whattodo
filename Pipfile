@@ -7,11 +7,15 @@ name = "pypi"
 click = "*"
 
 [dev-packages]
+freezegun = "*"
 isort = "*"
 pytest = "*"
 black = "*"
 mypy = "*"
+tox = "*"
 pylint = "*"
+pytest-cov = "*"
+pylint-fail-under = "*"
 
 [requires]
 python_version = "3.9"
