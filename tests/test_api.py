@@ -2,8 +2,10 @@ from datetime import datetime
 from typing import Tuple
 
 import pytest
+
 from freezegun.api import freeze_time
-from src.api import Task
+
+from whattodo.api import Task
 
 
 @pytest.fixture(scope="function")
@@ -20,10 +22,10 @@ def test_task_must_have_description(make_task):
 
 
 @pytest.mark.smoke
-@freeze_time("2020-12-25")
 def test_task_must_have_a_created_at(make_task):
-    task = make_task
-    assert task.created_at == datetime.now()
+    with freeze_time("2020-12-25"):
+        task = Task("example_description")
+        assert task.created_at == datetime.now()
 
 
 @pytest.mark.smoke
@@ -65,3 +67,9 @@ def test_task_can_be_altered_to_false_given_correct_value(
     task.status = param_value
     assert task._status is expected_value
     assert task.status == unicode_repr
+
+
+def test_task_description_can_be_updated(make_task):
+    task, old_description = make_task
+    task.description = "my new description"
+    assert task.description != old_description

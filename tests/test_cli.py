@@ -1,5 +1,6 @@
 from click.testing import CliRunner
-from src.cli import whattodo_cli
+
+from whattodo.cli import whattodo_cli
 
 
 def test_whattodo_cli_entrypoint():
