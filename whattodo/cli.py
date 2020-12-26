@@ -60,7 +60,10 @@ def clean_board():
     if not storage_data:
         typer.echo("There are no created boards yet!")
     else:
-        typer.confirm(f"Are you sure you want to remove all tasks from the Board {storage_data['name']}?", abort=True)
+        typer.confirm(
+            f"Are you sure you want to remove all tasks from the Board {storage_data['name']}?",
+            abort=True,
+        )
         board = Board.from_dict(storage_data)
         board.clean_tasks()
         store_to_json(board.to_dict())
