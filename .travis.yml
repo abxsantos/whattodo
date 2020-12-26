@@ -15,6 +15,6 @@ install:
   - pip install pipenv
   - pipenv install --system --dev
 script:
-  - tox -e py
+  - tox -e py,lint
 after_success:
   - bash <(curl -s https://codecov.io/bash)
