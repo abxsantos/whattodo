@@ -33,6 +33,7 @@ def list_tasks():
     storage_data = read_from_json()
     if not storage_data:
         typer.echo("There are no created boards yet!")
+        typer.Abort()
     else:
         board = Board.from_dict(storage_data)
         typer.echo(board.list_tasks)
@@ -46,6 +47,7 @@ def count_tasks():
     storage_data = read_from_json()
     if not storage_data:
         typer.echo("There are no created boards yet!")
+        typer.Abort()
     else:
         board = Board.from_dict(storage_data)
         typer.echo(f"The board '{board.name}' currently have {board.count_tasks} tasks")
@@ -57,8 +59,9 @@ def clean_board():
     Removes all tasks in the current active board.
     """
     storage_data = read_from_json()
-    if not storage_data:
+    if not storage_data or not storage_data.get("tasks"):
         typer.echo("There are no created boards yet!")
+        typer.Abort()
     else:
         typer.confirm(
             f"Are you sure you want to remove all tasks from the Board {storage_data['name']}?",
@@ -78,6 +81,7 @@ def add_task(description: str):
     storage_data = read_from_json()
     if not storage_data:
         typer.echo("There are no created boards yet!")
+        typer.Abort()
     else:
         if state["verbose"]:
             typer.echo("About to add a new task to board")
@@ -98,6 +102,7 @@ def update_task(status: str, index: int):
     storage_data = read_from_json()
     if not storage_data:
         typer.echo("There are no created boards yet!")
+        typer.Abort()
     else:
         board = Board.from_dict(storage_data)
         task = board.retrieve_task(index)
@@ -114,6 +119,7 @@ def remove_task(index: int):
     storage_data = read_from_json()
     if not storage_data:
         typer.echo("There are no created boards yet!")
+        typer.Abort()
     else:
         typer.confirm(f"Are you sure you want to remove the task {index}?", abort=True)
         board = Board.from_dict(storage_data)

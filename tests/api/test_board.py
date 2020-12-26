@@ -177,3 +177,17 @@ def test_remove_task():
 
     assert len(board._tasks) == 1
     assert board.tasks[0] == second_task
+
+
+def test_remove_task_must_raise_value_error_when_no_tasks_on_the_board():
+    board = Board(name="personal")
+    with pytest.raises(ValueError):
+        board.remove_task(0)
+
+
+def test_remove_task_must_raise_index_error_when_incorrect_index_is_given():
+    first_task = Task("my first task")
+    board = Board(name="personal")
+    board.add(first_task)
+    with pytest.raises(IndexError):
+        board.remove_task(len(board._tasks) + 1)
