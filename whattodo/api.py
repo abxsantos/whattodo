@@ -1,7 +1,24 @@
 """Main API for whattodo project."""
-
 from datetime import datetime
+from typing import Dict
 from typing import List
+from typing import Type
+from typing import TypedDict
+from typing import TypeVar
+
+T = TypeVar("T", bound="Task")
+B = TypeVar("B", bound="Board")
+
+
+TaskDict = TypedDict(
+    "TaskDict",
+    {"description": str, "status": bool, "created_at": str},
+)
+
+BoardDict = TypedDict(
+    "BoardDict",
+    {"name": str, "tasks": List[TaskDict], "created_at": str},
+)
 
 
 class Task:
@@ -84,6 +101,30 @@ class Task:
             ... 2020-12-25 00:00:00
         """
         return self._created_at.strftime("%Y-%m-%d %H:%M:%S")
+
+    @classmethod
+    def from_dict(cls: Type[T], dict_task) -> T:
+        """
+        Returns a board object created from a dict.
+        """
+        task = cls(
+            description=dict_task["description"]
+        )  # pylint: disable=protected-access
+        task._status = dict_task["status"]  # pylint: disable=protected-access
+        task._created_at = datetime.strptime(  # pylint: disable=protected-access
+            dict_task["created_at"], "%Y-%m-%d %H:%M:%S"
+        )
+        return task
+
+    def to_dict(self) -> Dict:
+        """
+        Parses the board to a dict.
+        """
+        return {
+            "description": self._description,
+            "status": self._status,
+            "created_at": self.created_at,
+        }
 
     def __str__(self) -> str:
         return f"{self._description} {self.status}"
@@ -176,6 +217,24 @@ class Board:
             return self._tasks[index]
         except IndexError as excinfo:
             raise IndexError(f"No tasks found at the index {index}") from excinfo
+
+    @classmethod
+    def from_dict(cls: Type[B], dict_board) -> B:
+        """
+        Returns a board object created from a dict.
+        """
+        board = cls(name=dict_board["name"])
+        board._tasks = [  # pylint: disable=protected-access
+            Task.from_dict(dict_task) for dict_task in dict_board["tasks"]
+        ]
+        return board
+
+    def to_dict(self) -> Dict:
+        """
+        Parses the board to a dict.
+        """
+        parsed_tasks = [task.to_dict() for task in self.tasks] if self.tasks else []
+        return {"name": self.name, "tasks": parsed_tasks}
 
     def __repr__(self) -> str:
         return f"<Board {self._name} >"

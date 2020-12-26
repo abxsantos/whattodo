@@ -89,6 +89,32 @@ class TestTask:
         task, description = make_task
         assert repr(task) == f"<Task {description} >"
 
+    def test_from_dict(self):
+        task_dict = {
+            "description": "my first task",
+            "status": False,
+            "created_at": "2020-12-26 00:00:00",
+        }
+
+        task = Task.from_dict(dict_task=task_dict)
+
+        assert isinstance(task, Task)
+        assert task.description == "my first task"
+        assert task._status is False
+        assert isinstance(task._created_at, datetime)
+        assert task.created_at == "2020-12-26 00:00:00"
+
+    def test_to_dict(self):
+        task_dict = {
+            "description": "my first task",
+            "status": False,
+            "created_at": "2020-12-26 00:00:00",
+        }
+
+        with freeze_time("2020-12-26 00:00:00"):
+            task = Task(description="my first task")
+            assert task.to_dict() == task_dict
+
 
 class TestBoard:
     @pytest.mark.smoke
@@ -163,3 +189,55 @@ class TestBoard:
     def test_board_must_have_repr_representation(self):
         board = Board(name="personal")
         assert repr(board) == f"<Board {board.name} >"
+
+    def test_from_dict(self):
+        board_dict = {
+            "name": "personal",
+            "tasks": [
+                {
+                    "description": "my first task",
+                    "status": False,
+                    "created_at": "2020-12-26 00:00:00",
+                },
+                {
+                    "description": "my second task",
+                    "status": True,
+                    "created_at": "2020-12-26 00:01:00",
+                },
+            ],
+        }
+
+        board = Board.from_dict(dict_board=board_dict)
+
+        assert isinstance(board, Board)
+        assert board.name == board_dict["name"]
+        assert board.count_tasks == 2
+        assert isinstance(board.retrieve_task(0), Task)
+        assert isinstance(board.retrieve_task(1), Task)
+
+    def test_to_dict(self):
+        with freeze_time("2020-12-26 00:00:00"):
+            board_dict = {
+                "name": "personal",
+                "tasks": [
+                    {
+                        "description": "my first task",
+                        "status": False,
+                        "created_at": "2020-12-26 00:00:00",
+                    },
+                    {
+                        "description": "my second task",
+                        "status": True,
+                        "created_at": "2020-12-26 00:00:00",
+                    },
+                ],
+            }
+
+            first_task = Task("my first task")
+            second_task = Task("my second task")
+            second_task._status = True
+            board = Board(name="personal")
+            board.add(first_task)
+            board.add(second_task)
+
+            assert board.to_dict() == board_dict
