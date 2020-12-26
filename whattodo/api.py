@@ -86,10 +86,10 @@ class Task:
         return self._created_at.strftime("%Y-%m-%d %H:%M:%S")
 
     def __str__(self) -> str:
-        return f"{self._description} {self._status}"
+        return f"{self._description} {self.status}"
 
     def __repr__(self) -> str:
-        return f"<Task {self._description}"
+        return f"<Task {self._description} >"
 
 
 class Board:
@@ -178,7 +178,7 @@ class Board:
             raise IndexError(f"No tasks found at the index {index}") from excinfo
 
     def __repr__(self) -> str:
-        return f"<Board {self._name}>"
+        return f"<Board {self._name} >"
 
     def __str__(self) -> str:
         return self.list_tasks

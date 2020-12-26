@@ -79,6 +79,16 @@ class TestTask:
         task.description = "my new description"
         assert task.description != old_description
 
+    @pytest.mark.smoke
+    def test_task_must_have_str_representation(self, make_task: Tuple[Task, str]):
+        task, description = make_task
+        assert str(task) == f"{description} {task.status}"
+
+    @pytest.mark.smoke
+    def test_task_must_have_repr_representation(self, make_task: Tuple[Task, str]):
+        task, description = make_task
+        assert repr(task) == f"<Task {description} >"
+
 
 class TestBoard:
     @pytest.mark.smoke
@@ -86,7 +96,6 @@ class TestBoard:
         board = Board(name="personal")
         assert board.name == "personal"
 
-    @pytest.mark.smoke
     def test_board_must_hold_added_tasks(self, make_task: Tuple[Task, str]):
         task, _ = make_task
         board = Board(name="personal")
@@ -144,3 +153,13 @@ class TestBoard:
             board.retrieve_task(index)
         exception_msg = excinfo.value.args[0]
         assert exception_msg == f"No tasks found at the index {index}"
+
+    @pytest.mark.smoke
+    def test_board_must_have_str_representation(self):
+        board = Board(name="personal")
+        assert str(board) == board.list_tasks
+
+    @pytest.mark.smoke
+    def test_board_must_have_repr_representation(self):
+        board = Board(name="personal")
+        assert repr(board) == f"<Board {board.name} >"
