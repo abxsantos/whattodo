@@ -1,6 +1,7 @@
 """Main API for whattodo project."""
 
 from datetime import datetime
+from typing import List
 
 
 class Task:
@@ -75,17 +76,108 @@ class Task:
             self._status = False
 
     @property
-    def created_at(self) -> datetime:
+    def created_at(self) -> str:
         """
         Retrieves the creation date of a task.
 
             >>> task.created_at
             ... 2020-12-25 00:00:00
         """
-        return self._created_at
+        return self._created_at.strftime("%Y-%m-%d %H:%M:%S")
 
     def __str__(self) -> str:
         return f"{self._description} {self._status}"
 
     def __repr__(self) -> str:
         return f"<Task {self._description}"
+
+
+class Board:
+    """
+    Board representation that will hold tasks.
+    """
+
+    def __init__(self, name):
+        """
+        >>> board = Board(name="Personal")
+        >>> board.add(first_task)
+        >>> board.list_tasks
+        ... =============================================================================
+        ... Personal
+        ... =============================================================================
+        ... my first task                                    ✘        2020-12-25 00:00:00
+        """
+        self._name = name
+        self._tasks: List[Task] = []
+
+    @property
+    def name(self):
+        """
+        Retrieved the board name.
+        """
+        return self._name
+
+    @property
+    def tasks(self):
+        """
+        Retrieves the tasks repository.
+        """
+        return self._tasks
+
+    def add(self, task: Task):
+        """
+        Adds a Task object to the board.
+        """
+        self._tasks.append(task)
+
+    @property
+    def list_tasks(self) -> str:
+        """
+        Lists all tasks in a string representation.
+        """
+        task_representation = ""
+        if not self._tasks:
+            return f"""
+            =============================================================================\n
+            {self._name}\n
+            =============================================================================\n
+            No tasks on this board!
+            """
+        for task in self._tasks:
+            task_representation += f"""
+            {task.description}                                    {task.status}        {task.created_at}\n
+            """
+        return f"""
+        =============================================================================\n
+        {self._name}\n
+        =============================================================================\n
+        {task_representation}
+        """
+
+    @property
+    def count_tasks(self) -> int:
+        """
+        Counts the number of tasks.
+        """
+        return len(self._tasks)
+
+    def retrieve_task(self, index: int) -> Task:
+        """
+        Retrieves a task given it's 0 based index.
+
+        @raises ValueError: When no tasks are present on the board.
+        
+        @raises IdexError: When the given index doesn't have a task.
+        """
+        if not self._tasks:
+            raise ValueError("No tasks on this board!")
+        try:
+            return self._tasks[index]
+        except IndexError:
+            raise IndexError(f"No tasks found at the index {index}")
+
+    def __repr__(self) -> str:
+        return f"<Board {self._name}>"
+
+    def __str__(self) -> str:
+        return self.list_tasks
