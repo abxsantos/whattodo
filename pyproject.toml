@@ -1,3 +1,9 @@
+[tool.pipenv]
+name = "whattodo"
+version = "0.0.0"
+description = ""
+authors = ["Alexandre Xavier <ale.bxsantos@gmail.com.br>"]
+
 [tool.pytest.ini_options]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
