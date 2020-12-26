@@ -166,15 +166,16 @@ class Board:
         Retrieves a task given it's 0 based index.
 
         @raises ValueError: When no tasks are present on the board.
-        
+
         @raises IdexError: When the given index doesn't have a task.
         """
+
         if not self._tasks:
             raise ValueError("No tasks on this board!")
         try:
             return self._tasks[index]
-        except IndexError:
-            raise IndexError(f"No tasks found at the index {index}")
+        except IndexError as excinfo:
+            raise IndexError(f"No tasks found at the index {index}") from excinfo
 
     def __repr__(self) -> str:
         return f"<Board {self._name}>"
