@@ -5,7 +5,7 @@ import pytest
 from freezegun.api import freeze_time
 from typer.testing import CliRunner
 
-from whattodo.api import Board
+from whattodo.api.board import Board
 from whattodo.cli import app
 
 

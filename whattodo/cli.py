@@ -2,8 +2,8 @@
 
 import typer
 
-from whattodo.api import Board
-from whattodo.api import Task
+from whattodo.api.board import Board
+from whattodo.api.task import Task
 from whattodo.file_storage import read_from_json
 from whattodo.file_storage import store_to_json
 
