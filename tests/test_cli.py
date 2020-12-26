@@ -5,7 +5,7 @@ import pytest
 from freezegun.api import freeze_time
 from typer.testing import CliRunner
 
-from whattodo.api import Board
+from whattodo.api.board import Board
 from whattodo.cli import app
 
 
@@ -85,6 +85,27 @@ def test_count_board_tasks_cli_command(mocked_read_from_json):
     assert str(count) in result.output
 
 
+@pytest.mark.parametrize(
+    "param_board",
+    [
+        ({}),
+        ([]),
+        (),
+    ],
+)
+@patch("whattodo.cli.read_from_json")
+def test_count_board_cli_command_must_exit_early_when_no_tasks_in_board(
+    mocked_read_from_json, param_board
+):
+    runner = CliRunner()
+    mocked_read_from_json.return_value = param_board
+
+    result = runner.invoke(app, ["board:count"])
+
+    assert result.exit_code == 0
+    assert "There are no created boards yet!" in result.output
+
+
 @patch("whattodo.cli.store_to_json")
 @patch("whattodo.cli.read_from_json")
 def test_add_task_cli_command(mocked_read_from_json, mocked_store_to_json):
@@ -135,6 +156,48 @@ def test_add_task_cli_command(mocked_read_from_json, mocked_store_to_json):
         mocked_store_to_json.assert_called_once_with(expected_board_dict)
 
 
+@pytest.mark.parametrize(
+    "param_board",
+    [
+        ({}),
+        ([]),
+        (),
+    ],
+)
+@patch("whattodo.cli.read_from_json")
+def test_add_task_board_cli_command_must_exit_early_when_no_tasks_in_board(
+    mocked_read_from_json, param_board
+):
+    runner = CliRunner()
+    mocked_read_from_json.return_value = param_board
+
+    result = runner.invoke(app, ["task:add", "some task"])
+
+    assert result.exit_code == 0
+    assert "There are no created boards yet!" in result.output
+
+
+@pytest.mark.parametrize(
+    "param_board",
+    [
+        ({}),
+        ([]),
+        (),
+    ],
+)
+@patch("whattodo.cli.read_from_json")
+def test_update_task_board_cli_command_must_exit_early_when_no_tasks_in_board(
+    mocked_read_from_json, param_board
+):
+    runner = CliRunner()
+    mocked_read_from_json.return_value = param_board
+
+    result = runner.invoke(app, ["task:update", "done", "0"])
+
+    assert result.exit_code == 0
+    assert "There are no created boards yet!" in result.output
+
+
 @patch("whattodo.cli.store_to_json")
 @patch("whattodo.cli.read_from_json")
 def test_update_task_cli_command(mocked_read_from_json, mocked_store_to_json):
@@ -176,4 +239,99 @@ def test_update_task_cli_command(mocked_read_from_json, mocked_store_to_json):
 
     assert result.exit_code == 0
     assert "done" in result.output
+    mocked_store_to_json.assert_called_once_with(expected_board_dict)
+
+
+@patch("whattodo.cli.store_to_json")
+@patch("whattodo.cli.read_from_json")
+def test_clean_board_cli_command(mocked_read_from_json, mocked_store_to_json):
+    runner = CliRunner()
+    board_dict = {
+        "name": "personal",
+        "tasks": [
+            {
+                "description": "my first task",
+                "status": False,
+                "created_at": "2020-12-26 15:13:45",
+            },
+            {
+                "description": "my second task",
+                "status": False,
+                "created_at": "2020-12-26 15:13:56",
+            },
+        ],
+    }
+    expected_board_dict = {
+        "name": "personal",
+        "tasks": [],
+    }
+    mocked_read_from_json.return_value = board_dict
+
+    result = runner.invoke(app, ["board:clean"], input="y\n")
+
+    assert result.exit_code == 0
+    mocked_store_to_json.assert_called_once_with(expected_board_dict)
+
+
+@pytest.mark.parametrize(
+    "param_board",
+    [
+        (
+            {
+                "name": "personal",
+                "tasks": [],
+            }
+        ),
+        ({}),
+        ([]),
+        (),
+    ],
+)
+@patch("whattodo.cli.read_from_json")
+def test_clean_board_cli_command_must_exit_early_given_invalid_data(
+    mocked_read_from_json, param_board
+):
+    runner = CliRunner()
+    mocked_read_from_json.return_value = param_board
+
+    result = runner.invoke(app, ["board:clean"])
+
+    assert result.exit_code == 0
+    assert "There are no created boards yet!" in result.output
+
+
+@patch("whattodo.cli.store_to_json")
+@patch("whattodo.cli.read_from_json")
+def test_remove_task_cli_command(mocked_read_from_json, mocked_store_to_json):
+    runner = CliRunner()
+    board_dict = {
+        "name": "personal",
+        "tasks": [
+            {
+                "description": "my first task",
+                "status": False,
+                "created_at": "2020-12-26 15:13:45",
+            },
+            {
+                "description": "my second task",
+                "status": False,
+                "created_at": "2020-12-26 15:13:56",
+            },
+        ],
+    }
+    expected_board_dict = {
+        "name": "personal",
+        "tasks": [
+            {
+                "description": "my first task",
+                "status": False,
+                "created_at": "2020-12-26 15:13:45",
+            },
+        ],
+    }
+    mocked_read_from_json.return_value = board_dict
+
+    result = runner.invoke(app, ["task:remove", "1"], input="y\n")
+
+    assert result.exit_code == 0
     mocked_store_to_json.assert_called_once_with(expected_board_dict)

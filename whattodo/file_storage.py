@@ -1,10 +1,11 @@
 """Main module to handle data persistance using a json file."""
+
 import json
 
 from contextlib import suppress
 from json.decoder import JSONDecodeError
 
-from whattodo.api import BoardDict
+from whattodo.api.board import BoardDict
 
 
 def store_to_json(data: BoardDict) -> None:
