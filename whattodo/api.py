@@ -1,6 +1,5 @@
 """Main API for whattodo project."""
 from datetime import datetime
-from typing import Dict
 from typing import List
 from typing import Type
 from typing import TypedDict
@@ -17,7 +16,7 @@ TaskDict = TypedDict(
 
 BoardDict = TypedDict(
     "BoardDict",
-    {"name": str, "tasks": List[TaskDict], "created_at": str},
+    {"name": str, "tasks": List[TaskDict]},
 )
 
 
@@ -116,7 +115,7 @@ class Task:
         )
         return task
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> TaskDict:
         """
         Parses the board to a dict.
         """
@@ -152,7 +151,7 @@ class Board:
         self._tasks: List[Task] = []
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         Retrieved the board name.
         """
@@ -202,7 +201,7 @@ class Board:
         """
         return len(self._tasks)
 
-    def retrieve_task(self, index: int) -> Task:
+    def retrieve_task(self, index: int):
         """
         Retrieves a task given it's 0 based index.
 
@@ -229,7 +228,7 @@ class Board:
         ]
         return board
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> BoardDict:
         """
         Parses the board to a dict.
         """
