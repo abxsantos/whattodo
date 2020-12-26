@@ -127,3 +127,20 @@ class TestBoard:
         board.add(second_task)
         assert board.retrieve_task(0) == first_task
         assert board.retrieve_task(1) == second_task
+
+    def test_retrieve_task_must_raise_value_error_when_no_tasks_are_on_board(self):
+        board = Board(name="personal")
+        with pytest.raises(ValueError) as excinfo:
+            board.retrieve_task(0)
+        exception_msg = excinfo.value.args[0]
+        assert exception_msg == "No tasks on this board!"
+
+    def test_retrieve_task_must_raise_index_error_given_invalid_index(self):
+        first_task = Task("first task")
+        board = Board(name="personal")
+        board.add(first_task)
+        index = 1
+        with pytest.raises(IndexError) as excinfo:
+            board.retrieve_task(index)
+        exception_msg = excinfo.value.args[0]
+        assert exception_msg == f"No tasks found at the index {index}"
