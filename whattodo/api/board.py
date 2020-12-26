@@ -48,6 +48,13 @@ class Board:
         """
         return self._tasks
 
+    @tasks.setter
+    def tasks(self, tasks: List) -> None:
+        """
+        Sets the tasks repository.
+        """
+        self._tasks = tasks
+
     def add(self, task: Task):
         """
         Adds a Task object to the board.
@@ -100,6 +107,28 @@ class Board:
             return self._tasks[index]
         except IndexError as excinfo:
             raise IndexError(f"No tasks found at the index {index}") from excinfo
+
+    def remove_task(self, index: int) -> None:
+        """
+        Removes a task given it's 0 based index.
+
+        @raises ValueError: When no tasks are present on the board.
+
+        @raises IdexError: When the given index doesn't have a task.
+        """
+
+        if not self._tasks:
+            raise ValueError("No tasks on this board!")
+        try:
+            self._tasks.pop(index)
+        except IndexError as excinfo:
+            raise IndexError(f"No tasks found at the index {index}") from excinfo
+
+    def clean_tasks(self) -> None:
+        """
+        Removes all tasks from the board.
+        """
+        self.tasks = []
 
     @classmethod
     def from_dict(cls: Type[B], dict_board) -> B:
