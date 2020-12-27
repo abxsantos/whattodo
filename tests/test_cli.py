@@ -9,7 +9,6 @@ from whattodo.api.board import Board
 from whattodo.cli import app
 
 
-
 @pytest.mark.smoke
 def test_whattodo_cli_entrypoint():
     runner = CliRunner()
