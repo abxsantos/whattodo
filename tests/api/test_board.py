@@ -8,16 +8,19 @@ from whattodo.api.board import Board
 from whattodo.api.task import Task
 
 
-@pytest.mark.smoke
-def test_board_must_have_a_name():
-    board = Board(name="personal")
+@pytest.fixture
+def board() -> Board:
+    result = Board(name="personal")
+    return result
 
+
+@pytest.mark.smoke
+def test_board_must_have_a_name(board: Board):
     assert board.name == "personal"
 
 
-def test_board_must_hold_added_tasks(make_task: Tuple[Task, str]):
+def test_board_must_hold_added_tasks(make_task: Tuple[Task, str], board: Board):
     task, _ = make_task
-    board = Board(name="personal")
 
     board.add(task)
 
@@ -26,10 +29,9 @@ def test_board_must_hold_added_tasks(make_task: Tuple[Task, str]):
 
 
 def test_list_tasks_must_retrieve_tasks_description_status_and_created_date(
-    make_task: Tuple[Task, str]
+    make_task: Tuple[Task, str], board: Board
 ):
     task, _ = make_task
-    board = Board(name="personal")
 
     board.add(task)
 
@@ -39,16 +41,16 @@ def test_list_tasks_must_retrieve_tasks_description_status_and_created_date(
     assert task.created_at in board.list_tasks
 
 
-def test_list_tasks_must_return_an_empty_board_representation_when_no_tasks():
-    board = Board(name="personal")
+def test_list_tasks_must_return_an_empty_board_representation_when_no_tasks(
+    board: Board,
+):
     assert "No tasks on this board!" in board.list_tasks
 
 
 def test_count_tasks_must_return_the_number_of_tasks_on_the_board(
-    make_task: Tuple[Task, str]
+    make_task: Tuple[Task, str], board: Board
 ):
     task, _ = make_task
-    board = Board(name="personal")
 
     board.add(task)
     assert board.count_tasks == 1
@@ -56,10 +58,9 @@ def test_count_tasks_must_return_the_number_of_tasks_on_the_board(
     assert board.count_tasks == 2
 
 
-def test_retrieve_task_must_retrieve_the_correct_task():
-    first_task = Task("first task")
-    second_task = Task("second task")
-    board = Board(name="personal")
+def test_retrieve_task_must_retrieve_the_correct_task(
+    board: Board, first_task: Task, second_task: Task
+):
     board.add(first_task)
     board.add(second_task)
 
@@ -67,9 +68,7 @@ def test_retrieve_task_must_retrieve_the_correct_task():
     assert board.retrieve_task(1) == second_task
 
 
-def test_retrieve_task_must_raise_value_error_when_no_tasks_are_on_board():
-    board = Board(name="personal")
-
+def test_retrieve_task_must_raise_value_error_when_no_tasks_are_on_board(board: Board):
     with pytest.raises(ValueError) as excinfo:
         board.retrieve_task(0)
     exception_msg = excinfo.value.args[0]
@@ -77,9 +76,9 @@ def test_retrieve_task_must_raise_value_error_when_no_tasks_are_on_board():
     assert exception_msg == "No tasks on this board!"
 
 
-def test_retrieve_task_must_raise_index_error_given_invalid_index():
-    first_task = Task("first task")
-    board = Board(name="personal")
+def test_retrieve_task_must_raise_index_error_given_invalid_index(
+    board: Board, first_task: Task
+):
     board.add(first_task)
     index = 1
 
@@ -91,44 +90,26 @@ def test_retrieve_task_must_raise_index_error_given_invalid_index():
 
 
 @pytest.mark.smoke
-def test_board_must_have_str_representation():
-    board = Board(name="personal")
+def test_board_must_have_str_representation(board: Board):
     assert str(board) == board.list_tasks
 
 
 @pytest.mark.smoke
-def test_board_must_have_repr_representation():
-    board = Board(name="personal")
+def test_board_must_have_repr_representation(board: Board):
     assert repr(board) == f"<Board {board.name} >"
 
 
-def test_from_dict():
-    board_dict = {
-        "name": "personal",
-        "tasks": [
-            {
-                "description": "my first task",
-                "status": False,
-                "created_at": "2020-12-26 00:00:00",
-            },
-            {
-                "description": "my second task",
-                "status": True,
-                "created_at": "2020-12-26 00:01:00",
-            },
-        ],
-    }
-
-    board = Board.from_dict(dict_board=board_dict)
+def test_from_dict(expected_status_change_board_dict):
+    board = Board.from_dict(dict_board=expected_status_change_board_dict)
 
     assert isinstance(board, Board)
-    assert board.name == board_dict["name"]
+    assert board.name == expected_status_change_board_dict["name"]
     assert board.count_tasks == 2
     assert isinstance(board.retrieve_task(0), Task)
     assert isinstance(board.retrieve_task(1), Task)
 
 
-def test_to_dict():
+def test_to_dict(board: Board):
     with freeze_time("2020-12-26 00:00:00"):
         board_dict = {
             "name": "personal",
@@ -145,20 +126,16 @@ def test_to_dict():
                 },
             ],
         }
-
         first_task = Task("my first task")
         second_task = Task("my second task")
         second_task._status = True
-        board = Board(name="personal")
         board.add(first_task)
         board.add(second_task)
 
         assert board.to_dict() == board_dict
 
 
-def test_clean_tasks():
-    first_task = Task("my first task")
-    board = Board(name="personal")
+def test_clean_tasks(board: Board, first_task: Task):
     board.add(first_task)
 
     board.clean_tasks()
@@ -166,10 +143,7 @@ def test_clean_tasks():
     assert board._tasks == []
 
 
-def test_remove_task():
-    first_task = Task("my first task")
-    second_task = Task("my second task")
-    board = Board(name="personal")
+def test_remove_task(board: Board, first_task: Task, second_task: Task):
     board.add(first_task)
     board.add(second_task)
 
@@ -179,15 +153,14 @@ def test_remove_task():
     assert board.tasks[0] == second_task
 
 
-def test_remove_task_must_raise_value_error_when_no_tasks_on_the_board():
-    board = Board(name="personal")
+def test_remove_task_must_raise_value_error_when_no_tasks_on_the_board(board: Board):
     with pytest.raises(ValueError):
         board.remove_task(0)
 
 
-def test_remove_task_must_raise_index_error_when_incorrect_index_is_given():
-    first_task = Task("my first task")
-    board = Board(name="personal")
+def test_remove_task_must_raise_index_error_when_incorrect_index_is_given(
+    board: Board, first_task: Task
+):
     board.add(first_task)
     with pytest.raises(IndexError):
         board.remove_task(len(board._tasks) + 1)
