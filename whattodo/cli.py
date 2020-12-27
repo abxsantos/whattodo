@@ -10,6 +10,8 @@ from whattodo.file_storage import store_to_json
 app = typer.Typer(help="WhatTodo CLI manager.")
 state = {"verbose": False}
 
+NO_CREATED_BOARDS = "There are no created boards yet!"
+
 
 @app.command("board:add")
 def add_board(board_name: str):
@@ -32,7 +34,7 @@ def list_tasks():
     """
     storage_data = read_from_json()
     if not storage_data:
-        typer.echo("There are no created boards yet!")
+        typer.echo(NO_CREATED_BOARDS)
         typer.Abort()
     else:
         board = Board.from_dict(storage_data)
@@ -46,7 +48,7 @@ def count_tasks():
     """
     storage_data = read_from_json()
     if not storage_data:
-        typer.echo("There are no created boards yet!")
+        typer.echo(NO_CREATED_BOARDS)
         typer.Abort()
     else:
         board = Board.from_dict(storage_data)
@@ -60,7 +62,7 @@ def clean_board():
     """
     storage_data = read_from_json()
     if not storage_data or not storage_data.get("tasks"):
-        typer.echo("There are no created boards yet!")
+        typer.echo(NO_CREATED_BOARDS)
         typer.Abort()
     else:
         typer.confirm(
@@ -80,7 +82,7 @@ def add_task(description: str):
     """
     storage_data = read_from_json()
     if not storage_data:
-        typer.echo("There are no created boards yet!")
+        typer.echo(NO_CREATED_BOARDS)
         typer.Abort()
     else:
         if state["verbose"]:
@@ -101,7 +103,7 @@ def update_task(status: str, index: int):
     """
     storage_data = read_from_json()
     if not storage_data:
-        typer.echo("There are no created boards yet!")
+        typer.echo(NO_CREATED_BOARDS)
         typer.Abort()
     else:
         board = Board.from_dict(storage_data)
@@ -118,7 +120,7 @@ def remove_task(index: int):
     """
     storage_data = read_from_json()
     if not storage_data:
-        typer.echo("There are no created boards yet!")
+        typer.echo(NO_CREATED_BOARDS)
         typer.Abort()
     else:
         typer.confirm(f"Are you sure you want to remove the task {index}?", abort=True)
