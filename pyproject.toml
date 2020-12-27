@@ -4,6 +4,8 @@ version = "0.0.0"
 description = "CLI tool to help organization"
 authors = ["Alexandre Xavier <ale.bxsantos@gmail.com.br>"]
 license = "MIT"
+readme = "README.md"
+repository = https://github.com/abxsantos/whattodo
 
 [tool.poetry.dependencies]
 python = "^3.9"
