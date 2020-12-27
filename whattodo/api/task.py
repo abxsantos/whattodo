@@ -1,6 +1,16 @@
-"""Main API for whattodo project."""
+"""Task API for whattodo project."""
 
 from datetime import datetime
+from typing import Type
+from typing import TypedDict
+from typing import TypeVar
+
+T = TypeVar("T", bound="Task")
+
+TaskDict = TypedDict(
+    "TaskDict",
+    {"description": str, "status": bool, "created_at": str},
+)
 
 
 class Task:
@@ -75,17 +85,41 @@ class Task:
             self._status = False
 
     @property
-    def created_at(self) -> datetime:
+    def created_at(self) -> str:
         """
         Retrieves the creation date of a task.
 
             >>> task.created_at
             ... 2020-12-25 00:00:00
         """
-        return self._created_at
+        return self._created_at.strftime("%Y-%m-%d %H:%M:%S")
+
+    @classmethod
+    def from_dict(cls: Type[T], dict_task) -> T:
+        """
+        Returns a board object created from a dict.
+        """
+        task = cls(
+            description=dict_task["description"]
+        )  # pylint: disable=protected-access
+        task._status = dict_task["status"]  # pylint: disable=protected-access
+        task._created_at = datetime.strptime(  # pylint: disable=protected-access
+            dict_task["created_at"], "%Y-%m-%d %H:%M:%S"
+        )
+        return task
+
+    def to_dict(self) -> TaskDict:
+        """
+        Parses the board to a dict.
+        """
+        return {
+            "description": self._description,
+            "status": self._status,
+            "created_at": self.created_at,
+        }
 
     def __str__(self) -> str:
-        return f"{self._description} {self._status}"
+        return f"{self._description} {self.status}"
 
     def __repr__(self) -> str:
-        return f"<Task {self._description}"
+        return f"<Task {self._description} >"

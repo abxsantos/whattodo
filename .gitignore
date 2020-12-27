@@ -1,8 +1,10 @@
+whattodo_data.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
+.devcontainer
 # C extensions
 *.so
 
